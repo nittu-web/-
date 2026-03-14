@@ -2,8 +2,9 @@
 /* FIREBASE CONFIG                 */
 /* ------------------------------- */
 const firebaseConfig = {
-apiKey: "AIzaSyBYhrX6wf3XmT6qQdYsexSW98QQmlCxpeI",
+  apiKey: "AIzaSyBYhrX6wf3XmT6qQdYsexSW98QQmlCxpeI",
   authDomain: "web-p8855.firebaseapp.com",
+  databaseURL: "https://web-p8855-default-rtdb.firebaseio.com",
   projectId: "web-p8855",
   storageBucket: "web-p8855.firebasestorage.app",
   messagingSenderId: "1045044667480",
