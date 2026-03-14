@@ -231,7 +231,7 @@ document.getElementById("replyBtn").onclick = () => {
   const txt = document.getElementById("replyInput").value.trim();
   if (!txt) return alert("Type a reply");
   db.ref("chat/" + currentChat + "/messages").push({
-    sender: "nittu",
+    sender: "admin",
     text: txt,
     time: Date.now()
   });
