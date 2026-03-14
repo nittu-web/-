@@ -172,7 +172,7 @@ function setupMessageBox() {
     const txt = msgInput.value.trim();
     if (!txt) return;
     db.ref("chat/" + chatID + "/messages").push({
-      sender: "user",
+      sender: "admin",
       name: userName,
       text: txt,
       time: Date.now()
