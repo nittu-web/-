@@ -132,6 +132,32 @@ loadGoogleMapsScript(() => initGMap());
 /* -------------------------------
    LIST ALL ACTIVE PRIVATE CHATS
    ------------------------------- */
+  /* -------------------------------
+   LEAFLET MAP (FREE - OpenStreetMap)
+   ------------------------------- */
+
+function initLeafletFallback() {
+  if (leafletMap) return;
+
+  document.getElementById("map").innerHTML = "";
+
+  leafletMap = L.map('map').setView([23.2599, 77.4126], 10);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19
+  }).addTo(leafletMap);
+
+  leafletMarker = L.marker([23.2599, 77.4126])
+    .addTo(leafletMap)
+    .bindPopup("Hello Map")
+    .openPopup();
+
+  usingGoogle = false;
+}
+
+/* start free map */
+initLeafletFallback();
 const chatsList = document.getElementById("chatsList");
 db.ref("chat").on("value", snap => {
   const data = snap.val() || {};
