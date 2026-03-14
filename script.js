@@ -2,14 +2,13 @@
 /* FIREBASE CONFIG                 */
 /* ------------------------------- */
 const firebaseConfig = {
-  apiKey: "AIzaSyDPXv7lI-YcPk2FECNiM61yZ_SsVU-vR2M",
-  authDomain: "nitin-494ef.firebaseapp.com",
-  databaseURL: "https://nitin-494ef-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "nitin-494ef",
-  storageBucket: "nitin-494ef.firebasestorage.app",
-  messagingSenderId: "806134093724",
-  appId: "1:806134093724:web:d749b676504569c92e9a59",
-  measurementId: "G-MWH4YB8C20"
+apiKey: "AIzaSyBYhrX6wf3XmT6qQdYsexSW98QQmlCxpeI",
+  authDomain: "web-p8855.firebaseapp.com",
+  projectId: "web-p8855",
+  storageBucket: "web-p8855.firebasestorage.app",
+  messagingSenderId: "1045044667480",
+  appId: "1:1045044667480:web:869454f4116d7ac668962d",
+  measurementId: "G-4B4FD3BRBP"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
